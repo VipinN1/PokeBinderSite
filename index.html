@@ -193,19 +193,29 @@
 
     /* Binder cell title: single-line auto-shrink */
     .binder-cell .title{
-      font-weight:700; margin-top:.25rem; font-size:1rem; line-height:1.1;
-      max-width:100%; text-align:center; white-space:nowrap; overflow:hidden;
-      display:inline-block; transform-origin:center; transition:transform .1s ease;
-    }
+  font-weight:700;
+  margin-top:.25rem;
+  font-size:clamp(.65rem, 2.3vw, .95rem); /* shrinks on small screens */
+  line-height:1.1;
+  max-width:100%;
+  text-align:center;
+  white-space:nowrap;        /* force single line */
+  overflow:hidden;           /* hide overflow */
+  text-overflow:ellipsis;    /* show “…” if too long */
+  display:block;
+}
+
     .binder-cell .title[data-fit]{ transform:scale(var(--fit-scale,1)); }
 
     @media (max-width: 420px){
-      .binder-grid{ gap:.4rem; }
-      .binder-cell{ min-height:96px; padding:.4rem; }
-      .binder-cell img{ width:56px; height:56px; }
-      .binder-cell .title{ font-size:.9rem; }
-      .binder-cell .slot{ font-size:.75rem; }
-    }
+  .binder-cell .title{
+    font-size:clamp(.6rem, 3vw, .8rem);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+}
+
 
     /* Highlight collected Pokémon in Binder View */
     .binder-cell.checked{

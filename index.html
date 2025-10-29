@@ -37,21 +37,19 @@
     }
 
     /* Lock horizontal scroll on mobile */
-html, body {
-  overflow-x: hidden;        /* hide any accidental horizontal overflow */
-  overscroll-behavior-x: none; /* prevent sideways rubber-band */
-  touch-action: pan-y;       /* only allow vertical panning */
-}
-/* On very small screens, let form rows stack to avoid horizontal overflow */
-@media (max-width: 400px) {
-  .row > * {
-    min-width: 0;          /* allow shrinking */
-    flex: 1 1 100%;        /* stack each control on its own line */
-  }
-  .wrap {
-    padding-inline: .25rem; /* slightly tighter header padding */
-  }
-}
+    html, body {
+      overflow-x: hidden;
+      overscroll-behavior-x: none;
+      touch-action: pan-y;
+    }
+    /* On very small screens, let form rows stack to avoid horizontal overflow */
+    @media (max-width: 400px) {
+      .row > * {
+        min-width: 0;
+        flex: 1 1 100%;
+      }
+      .wrap { padding-inline: .25rem; }
+    }
 
     /* repeating small Pokéball pattern drifting */
     .bg-pokeballs{
@@ -60,9 +58,9 @@ html, body {
       pointer-events:none;
       z-index:0;
       opacity:.08;
-      background-image:url('https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg'); /* replace with your PNG/SVG if you like */
+      background-image:url('https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg');
       background-repeat:repeat;
-      background-size:60px 60px;      /* adjust smaller/larger */
+      background-size:60px 60px;
       background-position:0 0;
       animation:pokeScroll 60s linear infinite;
     }
@@ -100,7 +98,7 @@ html, body {
       border-radius:16px;
       box-shadow:var(--shadow);
       border:1px solid var(--border);
-      overflow:hidden; /* keeps children inside rounded corners */
+      overflow:hidden;
     }
     .hero{max-width:var(--wrap);margin:1rem auto 0;padding:clamp(.5rem,2vw,1rem);position:relative;}
     .hero::before,.hero::after{
@@ -142,7 +140,7 @@ html, body {
     .controls{gap:.6rem;align-items:center;}
 
     .list{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;}
-    .row-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-bottom:1px solid var(--border);}
+    .row-item{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;border-bottom:1px solid var(--border);}
     .row-item:last-child{border-bottom:0;}
     .row-item input[type="checkbox"]{transform:scale(1.15);}
     .num{font-variant-numeric:tabular-nums;font-weight:800;width:3.7rem;}
@@ -171,6 +169,22 @@ html, body {
     .stat .v{font-weight:800;font-size:1.25rem;overflow-wrap:anywhere;}
     .stat .k{color:var(--muted);font-size:.9rem;}
     @media (max-width:380px){.stats{grid-template-columns:repeat(2,1fr);}}
+
+    /* --- SPRITES --- */
+    .sprite-box{
+      border:1px solid var(--border);
+      border-radius:12px;
+      width:120px;height:120px;
+      background:#fff;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:var(--shadow);
+    }
+    .sprite-box img{max-width:90%;max-height:90%;object-fit:contain;display:block;}
+    .icon-sprite{
+      width:44px;height:44px;object-fit:contain;display:block;
+      background:#fff;border-radius:8px;box-shadow:var(--shadow);
+      flex-shrink:0;
+    }
   </style>
 </head>
 <body>
@@ -215,6 +229,7 @@ html, body {
 
       <div class="row" style="align-items:center;margin-top:.25rem;">
         <div id="selectedName" class="muted" style="flex:1;"></div>
+        <div id="finderSprite" class="sprite-box" style="flex:0 0 120px;"></div>
       </div>
 
       <div class="out" id="out"></div>
@@ -285,6 +300,7 @@ html, body {
     const finderHint=document.getElementById('finderHint');
     const selectedNameEl=document.getElementById('selectedName');
     const collectedToggle=document.getElementById('collectedToggle');
+    const finderSpriteBox=document.getElementById('finderSprite');
 
     // --- Checklist elements ---
     const listEl=document.getElementById('list');
@@ -303,28 +319,59 @@ html, body {
     const padNum=n=>String(n).padStart(3,'0');
     function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(checkedState));updateProgress();}
 
+    // --- Sprite URLs (+ fallback) ---
+    function spriteOfficial(num){
+      const n=parseInt(num,10);
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${n}.png`;
+    }
+    function spriteClassic(num){
+      const n=parseInt(num,10);
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${n}.png`;
+    }
+    function makeSpriteImg(num, alt){
+      const img=new Image();
+      img.loading='lazy';
+      img.alt=alt||'sprite';
+      img.src=spriteOfficial(num);
+      img.dataset.fallback='0';
+      img.onerror=function(){
+        if(img.dataset.fallback==='0'){
+          img.src=spriteClassic(num);
+          img.dataset.fallback='1';
+        }
+      };
+      return img;
+    }
+
     // --- Finder logic ---
     function compute(){
       const n=parseInt(numInput.value,10);
-      if(!n||n<1){out.textContent='Enter a valid positive number.';syncFinderCollected(null);return;}
+      if(!n||n<1){out.textContent='Enter a valid positive number.';syncFinderUI(null);return;}
       const page=Math.floor((n-1)/16)+1;
       const slot=((n-1)%16)+1;
       out.textContent=`Page: ${page} • Slot: ${slot}`;
-      syncFinderCollected(padNum(n));
+      syncFinderUI(padNum(n));
     }
     document.getElementById('calc').addEventListener('click',compute);
 
-    function syncFinderCollected(id){
+    function syncFinderUI(id){
+      // name + collected toggle
       if(!id||!dexMap.has(id)){
         selectedNameEl.textContent='';
         collectedToggle.disabled=true;
         collectedToggle.checked=false;
+        finderSpriteBox.innerHTML='';
         return;
       }
       const name=dexMap.get(id);
       selectedNameEl.textContent=`${id} — ${name}`;
       collectedToggle.disabled=false;
       collectedToggle.checked=!!checkedState[id];
+
+      // sprite box
+      finderSpriteBox.innerHTML='';
+      const img=makeSpriteImg(id, `${name} artwork`);
+      finderSpriteBox.appendChild(img);
     }
 
     picker.addEventListener('change',()=>{
@@ -351,7 +398,7 @@ html, body {
       .then(text=>{
         text.split(/\r?\n/).forEach(raw=>{
           const line=raw.trim();
-          if(!line||/^number\s*,\s*name/i.test(line)) return;      // skip header/blank
+          if(!line||/^number\s*,\s*name/i.test(line)) return;
           const [numRaw,nameRaw]=line.split(',');
           if(!numRaw||!nameRaw) return;
           const num=numRaw.trim(), name=nameRaw.trim();
@@ -362,7 +409,7 @@ html, body {
         renderList();
         updateProgress();
         const n=parseInt(numInput.value,10);
-        if(n>0) syncFinderCollected(padNum(n));
+        if(n>0) syncFinderUI(padNum(n));
       })
       .catch(err=>{
         console.warn(err);
@@ -410,7 +457,7 @@ html, body {
       const isChecked=!!checkedState[num];
       if(currentFilter==='checked') return isChecked;
       if(currentFilter==='unchecked') return !isChecked;
-      return true; // all
+      return true;
     }
 
     function renderList(){
@@ -438,6 +485,17 @@ html, body {
           if(cur>0 && padNum(cur)===num) collectedToggle.checked=cb.checked;
         });
 
+        /* NEW: mini sprite icon */
+        const icon=document.createElement('img');
+        icon.className='icon-sprite';
+        icon.alt=`${name} sprite`;
+        icon.loading='lazy';
+        icon.src=spriteOfficial(num);
+        icon.dataset.fallback='0';
+        icon.onerror=function(){
+          if(icon.dataset.fallback==='0'){ icon.src=spriteClassic(num); icon.dataset.fallback='1'; }
+        };
+
         const numEl=document.createElement('div');
         numEl.className='num';
         numEl.textContent=num;
@@ -458,7 +516,7 @@ html, body {
           if(cur>0 && padNum(cur)===num) collectedToggle.checked=cb.checked;
         });
 
-        row.append(cb,numEl,nameEl);
+        row.append(cb, icon, numEl, nameEl);
         frag.appendChild(row);
       }
 
@@ -498,7 +556,7 @@ html, body {
             checkedState=obj;
             saveState(); renderList();
             const n=parseInt(numInput.value,10);
-            if(n>0) syncFinderCollected(padNum(n));
+            if(n>0) syncFinderUI(padNum(n));
           }
         }catch{ alert('Invalid JSON'); }
       };

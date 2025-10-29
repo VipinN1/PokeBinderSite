@@ -6,239 +6,156 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Binder Slots">
+  <meta name="theme-color" content="#e3350d">
   <title>Binder Slot Finder</title>
   <style>
     :root{
-      /* Theme */
-      --accent: #e3350d;           /* Pokémon red */
-      --accent-2: #ffcc00;         /* Pikachu yellow pop */
-      --bg: #fff9f6;               /* warm off-white */
-      --fg: #101214;
+      --accent:#e3350d;
+      --accent-2:#ffcc00;
+      --bg:#fff9f6;
+      --fg:#101214;
       --muted:#596273;
       --border:#e7e7e7;
-
-      /* Card shadow */
-      --shadow: 0 6px 18px rgba(0,0,0,.06);
-
-      /* Layout max width */
-      --wrap: 960px;
+      --shadow:0 6px 18px rgba(0,0,0,.06);
+      --wrap:960px;
     }
 
-    *{ box-sizing: border-box; }
-    html, body { height: 100%; }
+    *{box-sizing:border-box;}
+    html,body{height:100%;}
     body{
       margin:0;
       color:var(--fg);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:
-        radial-gradient(1200px 800px at -15% -20%, rgba(227,53,13,.12), transparent 60%),
+        radial-gradient(1200px 800px at -15% -20%, rgba(227,53,13,.15), transparent 60%),
         radial-gradient(900px 600px at 115% 10%, rgba(255,204,0,.12), transparent 55%),
         radial-gradient(700px 400px at 50% 120%, rgba(227,53,13,.10), transparent 55%),
         var(--bg);
       overflow-x:hidden;
     }
 
-    /* Floating Pokéball(s) behind everything */
-    /* Small repeating Pokéball pattern that slowly drifts diagonally */
-.bg-pokeballs{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: .08; /* overall subtlety */
-  background-image: url('YOUR-POKEBALL-LINK.svg'); /* <= paste your SVG/PNG URL here */
-  background-repeat: repeat;
-  background-size: 48px 48px;   /* smaller icons; try 40–56px */
-  background-position: 0 0;
-  animation: pokeScroll 60s linear infinite;
-}
-
-/* gentle diagonal drift of the tiled background */
-@keyframes pokeScroll{
-  0%   { background-position:   0px   0px; }
-  100% { background-position: 200px 200px; }
-}
-
-/* If users prefer reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .bg-pokeballs{ animation: none; }
-}
-
-    .pokeball.pb2{ width: 220px; height: 220px; opacity: .06; animation-duration: 28s, 42s; }
-    .pokeball.pb3{ width: 120px; height: 120px; opacity: .1;  animation-duration: 20s, 30s; }
-
-    /* Random-ish starting spots */
-    .pb1{ left: -60px; top: 20%; }
-    .pb2{ right: -80px; top: 55%; }
-    .pb3{ left: 60%; top: -80px; }
-
-    @keyframes floatY{
-      0%{ transform: translateY(0) rotate(0deg); }
-      50%{ transform: translateY(40px) rotate(10deg); }
-      100%{ transform: translateY(0) rotate(0deg); }
+    /* repeating small Pokéball pattern drifting */
+    .bg-pokeballs{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:.08;
+      background-image:url('https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg'); /* replace with your PNG/SVG if you like */
+      background-repeat:repeat;
+      background-size:48px 48px;      /* adjust smaller/larger */
+      background-position:0 0;
+      animation:pokeScroll 60s linear infinite;
     }
-    @keyframes floatX{
-      0%{ transform: translateX(0); }
-      50%{ transform: translateX(30px); }
-      100%{ transform: translateX(0); }
+    @keyframes pokeScroll{
+      0%{background-position:0 0;}
+      100%{background-position:200px 200px;}
     }
-    @media (prefers-reduced-motion: reduce){
-      .pokeball{ animation: none; }
-    }
+    @media (prefers-reduced-motion:reduce){.bg-pokeballs{animation:none;}}
 
     header{
-      position: sticky; top: 0; z-index: 5;
-      backdrop-filter: blur(6px);
-      background: rgba(255,255,255,.75);
-      border-bottom: 1px solid var(--border);
+      position:sticky;top:0;z-index:5;
+      backdrop-filter:blur(6px);
+      background:rgba(255,255,255,.75);
+      border-bottom:1px solid var(--border);
     }
-    .wrap{ max-width: var(--wrap); margin: 0 auto; padding: .5rem; }
-
-    .tabs{
-      display:flex; gap:.6rem; padding:.25rem;
-    }
+    .wrap{max-width:var(--wrap);margin:0 auto;padding:.5rem;}
+    .tabs{display:flex;gap:.6rem;padding:.25rem;}
     .tab-btn{
-      flex:1; position: relative;
-      padding:.85rem 1rem;
-      border:1px solid var(--border);
-      background:#fff;
-      cursor:pointer;
-      border-radius: 12px;
-      font-weight: 700;
-      box-shadow: var(--shadow);
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      flex:1;padding:.85rem 1rem;border:1px solid var(--border);
+      background:#fff;cursor:pointer;border-radius:12px;font-weight:700;
+      box-shadow:var(--shadow);
+      transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
     }
-    .tab-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,0,0,.08); }
+    .tab-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.08);}
     .tab-btn.active{
-      background: linear-gradient(180deg, var(--accent), #c82300);
-      color:#fff; border-color: transparent;
-      box-shadow: 0 10px 24px rgba(227,53,13,.25);
+      background:linear-gradient(180deg,var(--accent),#c82300);
+      color:#fff;border-color:transparent;
+      box-shadow:0 10px 24px rgba(227,53,13,.25);
     }
 
-    main{ position: relative; z-index: 1; }
+    main{position:relative;z-index:1;}
     .card{
       background:#fff;
-      padding: 1rem;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      overflow: hidden; /* keep children inside rounded corners */
+      padding:1rem;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      border:1px solid var(--border);
+      overflow:hidden; /* keeps children inside rounded corners */
     }
+    .hero{max-width:var(--wrap);margin:1rem auto 0;padding:clamp(.5rem,2vw,1rem);position:relative;}
+    .hero::before,.hero::after{
+      content:"";position:absolute;z-index:0;filter:blur(22px);opacity:.18;pointer-events:none;
+    }
+    .hero::before{width:280px;height:280px;left:-80px;top:-40px;background:radial-gradient(circle at 30% 30%,var(--accent),transparent 60%);transform:rotate(-8deg);}
+    .hero::after{width:260px;height:260px;right:-70px;bottom:-70px;background:radial-gradient(circle at 70% 70%,var(--accent-2),transparent 60%);transform:rotate(10deg);}
 
-    .hero{
-      max-width: var(--wrap);
-      margin: 1rem auto 0;
-      padding: clamp(.5rem, 2vw, 1rem);
-      position: relative;
+    label,input,button,select{font-size:1.05rem;}
+    input[type="number"],input[type="text"],select{
+      width:100%;padding:.65rem .85rem;margin:.5rem 0 1rem;
+      border-radius:12px;border:1px solid var(--border);background:#fff;
     }
-
-    /* Decorative blobs behind the card */
-    .hero::before, .hero::after{
-      content:"";
-      position: absolute; z-index: 0;
-      filter: blur(22px);
-      opacity: .18;
-      pointer-events: none;
-    }
-    .hero::before{
-      width: 280px; height: 280px; left: -80px; top:-40px;
-      background: radial-gradient(circle at 30% 30%, var(--accent), transparent 60%);
-      transform: rotate(-8deg);
-    }
-    .hero::after{
-      width: 260px; height: 260px; right: -70px; bottom:-70px;
-      background: radial-gradient(circle at 70% 70%, var(--accent-2), transparent 60%);
-      transform: rotate(10deg);
-    }
-
-    label,input,button,select{ font-size: 1.05rem; }
-    input[type="number"], input[type="text"], select{
-      width: 100%; padding: .65rem .85rem; margin:.5rem 0 1rem;
-      border-radius: 12px; border: 1px solid var(--border); background: #fff;
-    }
-    input:focus, select:focus{ outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
-
-    .row{ display:flex; gap:.75rem; flex-wrap: wrap; }
-    .row > *{ flex:1; min-width: 220px; }
-    .muted{ color:var(--muted); }
-
+    input:focus,select:focus{outline:2px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:2px;}
+    .row{display:flex;gap:.75rem;flex-wrap:wrap;}
+    .row>*{flex:1;min-width:220px;}
+    .muted{color:var(--muted);}
     button.primary{
-      padding:.8rem 1.1rem; border:0; border-radius: 12px; cursor:pointer;
-      background: linear-gradient(180deg, var(--accent), #c82300);
-      color:#fff; font-weight: 800; letter-spacing:.2px;
-      box-shadow: 0 12px 24px rgba(227,53,13,.28);
-      transition: transform .12s ease, box-shadow .12s ease;
+      padding:.8rem 1.1rem;border:0;border-radius:12px;cursor:pointer;
+      background:linear-gradient(180deg,var(--accent),#c82300);
+      color:#fff;font-weight:800;letter-spacing:.2px;
+      box-shadow:0 12px 24px rgba(227,53,13,.28);
+      transition:transform .12s ease,box-shadow .12s ease;
     }
-    button.primary:hover{ transform: translateY(-1px); box-shadow: 0 16px 30px rgba(227,53,13,.32); }
-    button{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:.7rem 1rem; cursor:pointer; }
+    button.primary:hover{transform:translateY(-1px);box-shadow:0 16px 30px rgba(227,53,13,.32);}
+    button{background:#fff;border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;cursor:pointer;}
+    input[type="checkbox"]{accent-color:var(--accent);}
+    .out{margin-top:.75rem;font-weight:700;}
 
-    /* accent-color tints checkboxes/radios to red where supported */
-    input[type="checkbox"]{ accent-color: var(--accent); }
+    [data-tab]{display:none;}
+    [data-tab].active{display:block;}
 
-    .out{ margin-top: .75rem; font-weight: 700; }
+    .toolbar{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem;}
+    .toolbar .grow{flex:1;min-width:200px;}
+    .pill{display:inline-block;padding:.35rem .6rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);background:#fff;}
 
-    /* Hide/show tabs */
-    [data-tab]{ display:none; }
-    [data-tab].active{ display:block; }
+    /* spacing fix for progress pill */
+    #progress{position:relative;top:-3px;margin-right:.4rem;}
+    .controls{gap:.6rem;align-items:center;}
 
-    /* Checklist list */
-    .toolbar{ display:flex; gap:.75rem; flex-wrap: wrap; align-items: center; margin-bottom:.5rem; }
-    .toolbar .grow{ flex:1; min-width: 200px; }
-    .pill{ display:inline-block; padding:.35rem .6rem; border:1px solid var(--border); border-radius:999px; color:var(--muted); background:#fff; }
+    .list{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;}
+    .row-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-bottom:1px solid var(--border);}
+    .row-item:last-child{border-bottom:0;}
+    .row-item input[type="checkbox"]{transform:scale(1.15);}
+    .num{font-variant-numeric:tabular-nums;font-weight:800;width:3.7rem;}
+    .name{flex:1;min-width:0;}
+    .strike{text-decoration:line-through;color:var(--muted);}
+    .filters{display:flex;gap:.4rem;}
+    .filters button{padding:.45rem .7rem;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;}
+    .filters button.active{background:var(--accent);color:#fff;border-color:transparent;}
 
-    .list{ border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background:#fff; }
-    .row-item{ display:flex; align-items:center; gap:.75rem; padding:.7rem .9rem; border-bottom:1px solid var(--border); }
-    .row-item:last-child{ border-bottom:0; }
-    .row-item input[type="checkbox"]{ transform: scale(1.15); }
-    .num{ font-variant-numeric: tabular-nums; font-weight: 800; width: 3.7rem; }
-    .name{ flex:1; min-width:0; }
-    .strike{ text-decoration: line-through; color: var(--muted); }
-
-    .filters{ display:flex; gap:.4rem; }
-    .filters button{ padding:.45rem .7rem; border:1px solid var(--border); border-radius:999px; background:#fff; cursor:pointer; }
-    .filters button.active{ background: var(--accent); color:#fff; border-color: transparent; }
-/* --- progress pill spacing fix --- */
-#progress {
-  position: relative;
-  top: -3px;           /* lifts it slightly away from buttons */
-  margin-right: .4rem; /* gives horizontal breathing room */
-}
-
-.controls {
-  gap: .6rem;          /* ensures consistent space between elements */
-  align-items: center;
-}
-/* --- end spacing fix --- */
-
-    /* Responsive stats grid — fixes mobile overflow */
+    /* Responsive stats grid that wraps on mobile */
     .stats{
       display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
       gap:.6rem;
       margin:.6rem 0 1rem;
     }
     .stat{
       border:1px solid var(--border);
-      border-radius: 12px;
+      border-radius:12px;
       padding:.6rem .8rem;
-      background: linear-gradient(180deg, #ffffff, #fff4f1);
+      background:linear-gradient(180deg,#ffffff,#fff4f1);
       text-align:center;
       min-width:0;
-      box-shadow: var(--shadow);
+      box-shadow:var(--shadow);
     }
-    .stat .v{ font-weight:800; font-size:1.25rem; overflow-wrap:anywhere; }
-    .stat .k{ color:var(--muted); font-size:.9rem; }
-
-    @media (max-width: 380px){
-      .stats{ grid-template-columns: repeat(2,1fr); }
-    }
+    .stat .v{font-weight:800;font-size:1.25rem;overflow-wrap:anywhere;}
+    .stat .k{color:var(--muted);font-size:.9rem;}
+    @media (max-width:380px){.stats{grid-template-columns:repeat(2,1fr);}}
   </style>
 </head>
 <body>
-  <!-- floating pokéballs -->
-  <!-- replace the old 3 .pokeball divs with this single div -->
-<div class="bg-pokeballs" aria-hidden="true"></div>
-
+  <div class="bg-pokeballs" aria-hidden="true"></div>
 
   <header>
     <div class="wrap">
@@ -250,9 +167,10 @@
   </header>
 
   <main class="hero">
+    <!-- Finder -->
     <section id="finder" class="card active" data-tab>
-      <h1 style="margin:.25rem 0 0.5rem; display:flex; align-items:center; gap:.5rem;">
-        <span style="display:inline-block;width:.8rem;height:.8rem;border-radius:999px;background:var(--accent)"></span>
+      <h1 style="margin:.25rem 0 0.5rem;display:flex;align-items:center;gap:.5rem;">
+        <span style="width:.8rem;height:.8rem;border-radius:999px;background:var(--accent);display:inline-block"></span>
         Binder Slot Finder
       </h1>
       <p class="muted">Each side has 16 slots. Enter a number or pick a Pokémon:</p>
@@ -267,16 +185,16 @@
           <label for="pokeNum">Card #</label>
           <input id="pokeNum" type="number" min="1" inputmode="numeric" placeholder="e.g. 67" />
         </div>
-        <div style="align-self:flex-end; display:flex; gap:.5rem;">
+        <div style="align-self:flex-end;display:flex;gap:.5rem;">
           <button id="calc" class="primary">Find Slot</button>
-          <label style="display:flex;align-items:center;gap:.5rem; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; background:#fff;">
+          <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border:1px solid var(--border);border-radius:12px;background:#fff;">
             <input type="checkbox" id="collectedToggle" disabled />
             Collected
           </label>
         </div>
       </div>
 
-      <div id="finderMeta" class="row" style="align-items:center; margin-top:.25rem;">
+      <div class="row" style="align-items:center;margin-top:.25rem;">
         <div id="selectedName" class="muted" style="flex:1;"></div>
       </div>
 
@@ -288,13 +206,13 @@
       </div>
     </section>
 
+    <!-- Checklist -->
     <section id="checklist" class="card" data-tab>
-      <h1 style="margin:.25rem 0 .5rem; display:flex; align-items:center; gap:.5rem;">
-        <span style="display:inline-block;width:.8rem;height:.8rem;border-radius:999px;background:var(--accent-2)"></span>
+      <h1 style="margin:.25rem 0 .5rem;display:flex;align-items:center;gap:.5rem;">
+        <span style="width:.8rem;height:.8rem;border-radius:999px;background:var(--accent-2);display:inline-block"></span>
         Checklist
       </h1>
 
-      <!-- Stats -->
       <div class="stats" id="stats">
         <div class="stat"><div class="v" id="statCollected">0</div><div class="k">Collected</div></div>
         <div class="stat"><div class="v" id="statTotal">0</div><div class="k">Total</div></div>
@@ -316,7 +234,7 @@
 
       <div id="list" class="list" aria-live="polite"></div>
 
-      <div class="row" style="margin-top: .75rem;">
+      <div class="row" style="margin-top:.75rem;">
         <button id="markAll">Mark All</button>
         <button id="clearAll">Clear All</button>
         <button id="exportBtn">Export</button>
@@ -328,255 +246,249 @@
   </main>
 
   <script>
-    // ---------- Tab switching ----------
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabs = document.querySelectorAll('[data-tab]');
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        tabs.forEach(t => t.classList.remove('active'));
+    // --- Tab switching ---
+    const tabBtns=document.querySelectorAll('.tab-btn');
+    const tabs=document.querySelectorAll('[data-tab]');
+    tabBtns.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        tabBtns.forEach(b=>b.classList.remove('active'));
+        tabs.forEach(t=>t.classList.remove('active'));
         btn.classList.add('active');
         document.querySelector(btn.dataset.open).classList.add('active');
       });
     });
 
-    // ---------- Finder elements ----------
-    const out = document.getElementById('out');
-    const numInput = document.getElementById('pokeNum');
-    const picker = document.getElementById('pokePicker');
-    const dataList = document.getElementById('pokeList');
-    const finderHint = document.getElementById('finderHint');
-    const selectedNameEl = document.getElementById('selectedName');
-    const collectedToggle = document.getElementById('collectedToggle');
+    // --- Finder elements ---
+    const out=document.getElementById('out');
+    const numInput=document.getElementById('pokeNum');
+    const picker=document.getElementById('pokePicker');
+    const dataList=document.getElementById('pokeList');
+    const finderHint=document.getElementById('finderHint');
+    const selectedNameEl=document.getElementById('selectedName');
+    const collectedToggle=document.getElementById('collectedToggle');
 
-    // ---------- Checklist elements ----------
-    const listEl = document.getElementById('list');
-    const searchList = document.getElementById('searchList');
-    const progressEl = document.getElementById('progress');
-    const filterButtons = document.querySelectorAll('.filters button');
-    const statCollected = document.getElementById('statCollected');
-    const statTotal = document.getElementById('statTotal');
-    const statPercent = document.getElementById('statPercent');
-    const statRemaining = document.getElementById('statRemaining');
+    // --- Checklist elements ---
+    const listEl=document.getElementById('list');
+    const searchList=document.getElementById('searchList');
+    const progressEl=document.getElementById('progress');
+    const filterButtons=document.querySelectorAll('.filters button');
+    const statCollected=document.getElementById('statCollected');
+    const statTotal=document.getElementById('statTotal');
+    const statPercent=document.getElementById('statPercent');
+    const statRemaining=document.getElementById('statRemaining');
 
-    // ---------- Data / State ----------
-    const STORAGE_KEY = 'binderChecked_v1';
-    /** number (3+ digits string) -> name */
-    const dexMap = new Map();
-    /** { "001": true/false } */
-    let checkedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    function padNum(n){ return String(n).padStart(3,'0'); }
+    // --- State ---
+    const STORAGE_KEY='binderChecked_v1';
+    const dexMap=new Map();          // { "001" => "Bulbasaur", ... }
+    let checkedState=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    const padNum=n=>String(n).padStart(3,'0');
+    function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(checkedState));updateProgress();}
 
-    function saveState(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(checkedState));
-      updateProgress();
-    }
-
-    // ---------- Finder logic ----------
+    // --- Finder logic ---
     function compute(){
-      const n = parseInt(numInput.value, 10);
-      if (!n || n < 1){ out.textContent = 'Enter a valid positive number.'; syncFinderCollected(null); return; }
-      const page = Math.floor((n - 1) / 16) + 1;
-      const slot = ((n - 1) % 16) + 1;
-      out.textContent = `Page: ${page} • Slot: ${slot}`;
-      const id = padNum(n);
-      syncFinderCollected(id);
+      const n=parseInt(numInput.value,10);
+      if(!n||n<1){out.textContent='Enter a valid positive number.';syncFinderCollected(null);return;}
+      const page=Math.floor((n-1)/16)+1;
+      const slot=((n-1)%16)+1;
+      out.textContent=`Page: ${page} • Slot: ${slot}`;
+      syncFinderCollected(padNum(n));
     }
-    document.getElementById('calc').addEventListener('click', compute);
+    document.getElementById('calc').addEventListener('click',compute);
 
     function syncFinderCollected(id){
-      if (!id || !dexMap.has(id)){
-        selectedNameEl.textContent = '';
-        collectedToggle.disabled = true;
-        collectedToggle.checked = false;
+      if(!id||!dexMap.has(id)){
+        selectedNameEl.textContent='';
+        collectedToggle.disabled=true;
+        collectedToggle.checked=false;
         return;
       }
-      const name = dexMap.get(id);
-      selectedNameEl.textContent = `${id} — ${name}`;
-      collectedToggle.disabled = false;
-      collectedToggle.checked = !!checkedState[id];
+      const name=dexMap.get(id);
+      selectedNameEl.textContent=`${id} — ${name}`;
+      collectedToggle.disabled=false;
+      collectedToggle.checked=!!checkedState[id];
     }
 
-    picker.addEventListener('change', () => {
-      const m = picker.value.match(/^\s*(\d{1,4})/);
-      if (m){
-        const n = parseInt(m[1], 10);
-        if (Number.isFinite(n) && n > 0){ numInput.value = String(n); compute(); }
+    picker.addEventListener('change',()=>{
+      const m=picker.value.match(/^\s*(\d{1,4})/);
+      if(m){
+        const n=parseInt(m[1],10);
+        if(Number.isFinite(n)&&n>0){numInput.value=String(n);compute();}
       }
     });
 
-    collectedToggle.addEventListener('change', () => {
-      const n = parseInt(numInput.value, 10);
-      if (!n || n < 1) return;
-      const id = padNum(n);
-      if (!dexMap.has(id)) return;
-      checkedState[id] = collectedToggle.checked;
-      saveState(); renderList();
+    collectedToggle.addEventListener('change',()=>{
+      const n=parseInt(numInput.value,10);
+      if(!n||n<1)return;
+      const id=padNum(n);
+      if(!dexMap.has(id))return;
+      checkedState[id]=collectedToggle.checked;
+      saveState();
+      renderList(); // reflect immediately in the checklist
     });
 
-    // ---------- Load pokemon.txt ----------
+    // --- Load pokemon.txt ---
     fetch('pokemon.txt')
-      .then(r => { if (!r.ok) throw new Error('pokemon.txt not found'); return r.text(); })
-      .then(text => {
-        const lines = text.split(/\r?\n/);
-        for (const raw of lines){
-          const line = raw.trim();
-          if (!line || /^number\s*,\s*name/i.test(line)) continue;
-          const [numRaw, nameRaw] = line.split(',');
-          if (!numRaw || !nameRaw) continue;
-          const num = numRaw.trim();
-          const name = nameRaw.trim();
-          if (!/^\d+$/.test(num)) continue;
-          dexMap.set(num, name);
-        }
+      .then(r=>{ if(!r.ok) throw new Error('pokemon.txt not found'); return r.text(); })
+      .then(text=>{
+        text.split(/\r?\n/).forEach(raw=>{
+          const line=raw.trim();
+          if(!line||/^number\s*,\s*name/i.test(line)) return;      // skip header/blank
+          const [numRaw,nameRaw]=line.split(',');
+          if(!numRaw||!nameRaw) return;
+          const num=numRaw.trim(), name=nameRaw.trim();
+          if(!/^\d+$/.test(num)) return;
+          dexMap.set(num,name);
+        });
         populateDatalist();
         renderList();
         updateProgress();
-
-        const n = parseInt(numInput.value, 10);
-        if (n > 0) syncFinderCollected(padNum(n));
+        const n=parseInt(numInput.value,10);
+        if(n>0) syncFinderCollected(padNum(n));
       })
-      .catch(err => {
+      .catch(err=>{
         console.warn(err);
-        finderHint.style.display = 'block';
-        finderHint.textContent = 'pokemon.txt could not be loaded. On GitHub Pages it will load if placed next to index.html.';
+        finderHint.style.display='block';
+        finderHint.textContent='pokemon.txt could not be loaded. On GitHub Pages it will load if placed next to index.html.';
       });
 
     function populateDatalist(){
-      dataList.innerHTML = '';
-      for (const [num, name] of dexMap){
-        const opt = document.createElement('option');
-        opt.value = `${num} — ${name}`;
+      dataList.innerHTML='';
+      for(const [num,name] of dexMap){
+        const opt=document.createElement('option');
+        opt.value=`${num} — ${name}`;
         dataList.appendChild(opt);
       }
     }
 
-    // ---------- Checklist rendering & interactions ----------
-    let currentFilter = 'all';
-    filterButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterButtons.forEach(b => b.classList.remove('active'));
+    // --- Checklist rendering ---
+    let currentFilter='all';
+    filterButtons.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        filterButtons.forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
+        currentFilter=btn.dataset.filter;
         renderList();
       });
     });
 
-    searchList.addEventListener('input', () => renderList());
+    searchList.addEventListener('input',()=>renderList());
 
     function updateProgress(){
-      const total = dexMap.size;
-      let checked = 0;
-      for (const num of dexMap.keys()) if (checkedState[num]) checked++;
-      const remaining = total - checked;
-      const pct = total ? Math.round((checked/total)*100) : 0;
+      const total=dexMap.size;
+      let checked=0;
+      for(const num of dexMap.keys()) if(checkedState[num]) checked++;
+      const remaining=total-checked;
+      const pct=total?Math.round((checked/total)*100):0;
 
-      progressEl.textContent = `${checked} / ${total}`;
-      statCollected.textContent = checked;
-      statTotal.textContent = total;
-      statPercent.textContent = `${pct}%`;
-      statRemaining.textContent = remaining;
+      progressEl.textContent=`${checked} / ${total}`;
+      statCollected.textContent=checked;
+      statTotal.textContent=total;
+      statPercent.textContent=`${pct}%`;
+      statRemaining.textContent=remaining;
     }
 
     function passesFilter(num){
-      const isChecked = !!checkedState[num];
-      if (currentFilter === 'checked') return isChecked;
-      if (currentFilter === 'unchecked') return !isChecked;
-      return true;
+      const isChecked=!!checkedState[num];
+      if(currentFilter==='checked') return isChecked;
+      if(currentFilter==='unchecked') return !isChecked;
+      return true; // all
     }
 
     function renderList(){
-      const q = searchList.value.trim().toLowerCase();
-      const frag = document.createDocumentFragment();
-      listEl.innerHTML = '';
+      const q=searchList.value.trim().toLowerCase();
+      const frag=document.createDocumentFragment();
+      listEl.innerHTML='';
 
-      for (const [num, name] of dexMap){
-        const hay = (num + ' ' + name).toLowerCase();
-        if (q && !hay.includes(q)) continue;
-        if (!passesFilter(num)) continue;
+      for(const [num,name] of dexMap){
+        const hay=(num+' '+name).toLowerCase();
+        if(q && !hay.includes(q)) continue;
+        if(!passesFilter(num)) continue;
 
-        const row = document.createElement('div');
-        row.className = 'row-item';
-        row.dataset.num = num;
+        const row=document.createElement('div');
+        row.className='row-item';
+        row.dataset.num=num;
 
-        const cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.checked = !!checkedState[num];
-        cb.addEventListener('change', () => {
-          checkedState[num] = cb.checked;
+        const cb=document.createElement('input');
+        cb.type='checkbox';
+        cb.checked=!!checkedState[num];
+        cb.addEventListener('change',()=>{
+          checkedState[num]=cb.checked;
           saveState();
-          nameEl.classList.toggle('strike', cb.checked);
-          const cur = parseInt(numInput.value, 10);
-          if (cur > 0 && padNum(cur) === num) collectedToggle.checked = cb.checked;
+          nameEl.classList.toggle('strike',cb.checked);
+          const cur=parseInt(numInput.value,10);
+          if(cur>0 && padNum(cur)===num) collectedToggle.checked=cb.checked;
         });
 
-        const numEl = document.createElement('div');
-        numEl.className = 'num';
-        numEl.textContent = num;
+        const numEl=document.createElement('div');
+        numEl.className='num';
+        numEl.textContent=num;
 
-        const nameEl = document.createElement('div');
-        nameEl.className = 'name';
-        nameEl.textContent = name;
-        nameEl.classList.toggle('strike', cb.checked);
+        const nameEl=document.createElement('div');
+        nameEl.className='name';
+        nameEl.textContent=name;
+        nameEl.classList.toggle('strike',cb.checked);
 
-        row.addEventListener('click', (e) => {
-          if (e.target.tagName.toLowerCase() === 'input') return;
-          cb.checked = !cb.checked;
-          checkedState[num] = cb.checked;
-          nameEl.classList.toggle('strike', cb.checked);
+        // tap anywhere on the row to toggle
+        row.addEventListener('click',(e)=>{
+          if(e.target.tagName.toLowerCase()==='input') return;
+          cb.checked=!cb.checked;
+          checkedState[num]=cb.checked;
+          nameEl.classList.toggle('strike',cb.checked);
           saveState();
-          const cur = parseInt(numInput.value, 10);
-          if (cur > 0 && padNum(cur) === num) collectedToggle.checked = cb.checked;
+          const cur=parseInt(numInput.value,10);
+          if(cur>0 && padNum(cur)===num) collectedToggle.checked=cb.checked;
         });
 
-        row.append(cb, numEl, nameEl);
+        row.append(cb,numEl,nameEl);
         frag.appendChild(row);
       }
+
       listEl.appendChild(frag);
       updateProgress();
     }
 
-    // Bulk actions + import/export
-    document.getElementById('markAll').addEventListener('click', () => {
-      for (const num of dexMap.keys()) checkedState[num] = true;
-      saveState(); renderList();
-    });
-    document.getElementById('clearAll').addEventListener('click', () => {
-      checkedState = {};
+    // --- Bulk actions + import/export ---
+    document.getElementById('markAll').addEventListener('click',()=>{
+      for(const num of dexMap.keys()) checkedState[num]=true;
       saveState(); renderList();
     });
 
-    document.getElementById('exportBtn').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(checkedState, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'binder-progress.json';
+    document.getElementById('clearAll').addEventListener('click',()=>{
+      checkedState={};
+      saveState(); renderList();
+    });
+
+    document.getElementById('exportBtn').addEventListener('click',()=>{
+      const blob=new Blob([JSON.stringify(checkedState,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='binder-progress.json';
       document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
     });
 
-    const importFile = document.getElementById('importFile');
-    document.getElementById('importBtn').addEventListener('click', () => importFile.click());
-    importFile.addEventListener('change', (e) => {
-      const file = e.target.files?.[0]; if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
+    const importFile=document.getElementById('importFile');
+    document.getElementById('importBtn').addEventListener('click',()=>importFile.click());
+    importFile.addEventListener('change',(e)=>{
+      const file=e.target.files?.[0]; if(!file) return;
+      const reader=new FileReader();
+      reader.onload=()=>{
         try{
-          const obj = JSON.parse(String(reader.result));
-          if (obj && typeof obj === 'object'){
-            checkedState = obj;
+          const obj=JSON.parse(String(reader.result));
+          if(obj && typeof obj==='object'){
+            checkedState=obj;
             saveState(); renderList();
-            const n = parseInt(numInput.value, 10);
-            if (n > 0) syncFinderCollected(padNum(n));
+            const n=parseInt(numInput.value,10);
+            if(n>0) syncFinderCollected(padNum(n));
           }
         }catch{ alert('Invalid JSON'); }
       };
       reader.readAsText(file);
-      importFile.value = '';
+      importFile.value='';
     });
 
-    // iOS Add to Home Screen reminder
-    document.getElementById('install').addEventListener('click', () => {
+    // iOS add-to-home-screen reminder
+    document.getElementById('install').addEventListener('click',()=>{
       alert('On iOS: tap the Share icon → “Add to Home Screen”.');
     });
   </script>

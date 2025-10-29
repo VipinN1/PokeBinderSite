@@ -49,7 +49,7 @@
       const side = slot <= 16 ? (slot <= 16 ? (slot <= 16 ? (slot<=16) : null) : null) : null; // placeholder
       const sideName = slot <= 16 ? ( ( ((n-1) % 32) < 16 ) ? 'Front' : 'Back' ) : 'Front'; // per 32-card sheet (optional)
 
-      out.textContent = `Page (side): ${page} • Slot: ${slot} ${sideName ? `• ${sideName}` : ''}`;
+      out.textContent = `Page: ${page} • Slot: ${slot}}`;
     });
 
     document.getElementById('install').addEventListener('click', () => {

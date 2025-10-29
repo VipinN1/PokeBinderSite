@@ -20,12 +20,18 @@
     .row { display:flex; gap:.75rem; }
     .row > * { flex:1; }
     .out { margin-top: 1rem; font-weight: 600; }
+    small.muted { color:#666 }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Binder Slot Finder</h1>
-    <p>Each side = 16 slots. Enter your card number:</p>
+    <p>Each side has 16 slots. Enter a number or pick a Pokémon:</p>
+
+    <label for="pokePicker">Search Pokémon</label>
+    <input id="pokePicker" list="pokeList" placeholder="e.g. 001 — Bulbasaur" autocomplete="off" />
+    <datalist id="pokeList"></datalist>
+    <small class="muted">Format in <code>pokemon.txt</code>: <code>Number,Name</code> (e.g., <code>001,Bulbasaur</code>)</small>
 
     <label for="pokeNum">Card #</label>
     <input id="pokeNum" type="number" min="1" inputmode="numeric" placeholder="e.g. 67" />
@@ -40,18 +46,70 @@
 
   <script>
     const out = document.getElementById('out');
-    document.getElementById('calc').addEventListener('click', () => {
-      const n = parseInt(document.getElementById('pokeNum').value, 10);
+    const numInput = document.getElementById('pokeNum');
+    const picker = document.getElementById('pokePicker');
+    const list = document.getElementById('pokeList');
+
+    // Map like: { "001": "Bulbasaur", ... }
+    const dexMap = new Map();
+
+    // Load pokemon.txt (must be in same directory or adjust path)
+    fetch('pokemon.txt')
+      .then(r => {
+        if (!r.ok) throw new Error('pokemon.txt not found');
+        return r.text();
+      })
+      .then(text => {
+        text.split(/\r?\n/).forEach(line => {
+          line = line.trim();
+          if (!line || /^number\s*,\s*name/i.test(line)) return; // skip header/blank
+          const [numRaw, nameRaw] = line.split(',');
+          if (!numRaw || !nameRaw) return;
+          const num = numRaw.trim();
+          const name = nameRaw.trim();
+          dexMap.set(num, name);
+
+          // For datalist, show "001 — Bulbasaur" but value must be searchable
+          const opt = document.createElement('option');
+          opt.value = `${num} — ${name}`;
+          list.appendChild(opt);
+        });
+      })
+      .catch(err => {
+        console.warn(err);
+        // Soft hint for local-file viewing; will work on GitHub Pages
+        const warn = document.createElement('div');
+        warn.className = 'out';
+        warn.textContent = 'Tip: pokemon.txt could not be loaded here. It will load when hosted (e.g., GitHub Pages).';
+        document.querySelector('.card').appendChild(warn);
+      });
+
+    // When user chooses from the datalist, extract the leading number
+    picker.addEventListener('change', () => {
+      const m = picker.value.match(/^\s*(\d{1,4})/); // allow up to 4 digits for later gens
+      if (m) {
+        const n = parseInt(m[1], 10);
+        if (Number.isFinite(n) && n > 0) {
+          numInput.value = String(n);
+          compute();
+        }
+      }
+    });
+
+    // Core math: each side has 16 slots; pages are 1-based
+    function compute() {
+      const n = parseInt(numInput.value, 10);
       if (!n || n < 1) { out.textContent = 'Enter a valid positive number.'; return; }
 
       const page = Math.floor((n - 1) / 16) + 1;
       const slot = ((n - 1) % 16) + 1;
-      const side = slot <= 16 ? (slot <= 16 ? (slot <= 16 ? (slot<=16) : null) : null) : null; // placeholder
-      const sideName = slot <= 16 ? ( ( ((n-1) % 32) < 16 ) ? 'Front' : 'Back' ) : 'Front'; // per 32-card sheet (optional)
 
-      out.textContent = `Page: ${page} • Slot: ${slot}}`;
-    });
+      out.textContent = `Page: ${page} • Slot: ${slot}`;
+    }
 
+    document.getElementById('calc').addEventListener('click', compute);
+
+    // iOS Add to Home Screen hint (manual; iOS requires user action)
     document.getElementById('install').addEventListener('click', () => {
       alert('On iOS: tap the Share icon → “Add to Home Screen”.');
     });

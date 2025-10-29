@@ -127,7 +127,7 @@
     button.primary:hover{transform:translateY(-1px);box-shadow:0 16px 30px rgba(227,53,13,.32);}
     button{background:#fff;border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;cursor:pointer;}
     input[type="checkbox"]{accent-color:var(--accent);}
-    .out{margin-top:.75rem;font-weight:700;}
+    .out{margin-top:.75rem;font-weight:700;text-align:center;} /* centered page/slot text */
 
     [data-tab]{display:none;}
     [data-tab].active{display:block;}
@@ -188,12 +188,25 @@
       flex-shrink:0;
     }
 
+    /* --- Finder actions centered --- */
+    .finder-actions{
+      display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-top:.25rem;
+    }
+    .collected-pill{
+      display:flex;align-items:center;gap:.5rem;
+      padding:.5rem .8rem;border:1px solid var(--border);border-radius:12px;background:#fff;
+    }
+
     /* --- BINDER VIEW (4x4) --- */
     .binder{ margin:.75rem 0 1rem; overflow:hidden; }
     .binder-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
     .binder-head .title{ font-weight:800; }
-    .binder-nav{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
-    .binder-nav button{ padding:.5rem .8rem; }
+    .binder-nav{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
+    .nav-arrows, .nav-jump{ display:flex; gap:.5rem; align-items:center; }
+    .nav-arrows{ white-space:nowrap; }
+    .nav-jump input{
+      width:4.2rem;padding:.4rem .5rem;border:1px solid var(--border);border-radius:8px;background:#fff;
+    }
     .binder-grid{
       display:grid;
       grid-template-columns:repeat(4, minmax(0, 1fr)); /* prevents horizontal overflow */
@@ -265,13 +278,15 @@
           <label for="pokeNum">Card #</label>
           <input id="pokeNum" type="number" min="1" inputmode="numeric" placeholder="e.g. 67" />
         </div>
-        <div style="align-self:flex-end;display:flex;gap:.5rem;">
-          <button id="calc" class="primary">Find Slot</button>
-          <label style="display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border:1px solid var(--border);border-radius:12px;background:#fff;">
-            <input type="checkbox" id="collectedToggle" disabled />
-            Collected
-          </label>
-        </div>
+      </div>
+
+      <!-- Centered actions -->
+      <div class="finder-actions">
+        <button id="calc" class="primary">Find Slot</button>
+        <label class="collected-pill">
+          <input type="checkbox" id="collectedToggle" disabled />
+          Collected
+        </label>
       </div>
 
       <!-- Selected name + centered larger sprite -->
@@ -289,7 +304,7 @@
     <!-- Checklist -->
     <section id="checklist" class="card" data-tab>
       <h1 style="margin:.25rem 0 .5rem;display:flex;align-items:center;gap:.5rem;">
-        <span style="width:.8rem;height:.8rem;border-radius:999px;background:var(--accent-2);display:inline-block"></span>
+        <span style="width:.8rem;height:.8rem;border-radius:999px;background:#ffcc00;display:inline-block"></span>
         Checklist
       </h1>
 
@@ -305,12 +320,15 @@
         <div class="binder-head">
           <div class="title">Binder View</div>
           <div class="binder-nav">
-            <button id="binderPrev">◀ Prev</button>
+            <div class="nav-arrows">
+              <button id="binderPrev">◀ Prev</button>
+              <button id="binderNext">Next ▶</button>
+            </div>
             <span id="binderPageLabel" class="muted">Page 1 / 1</span>
-            <input id="binderJump" type="number" min="1" value="1" aria-label="Jump to page"
-              style="width:4.2rem;padding:.4rem .5rem;border:1px solid var(--border);border-radius:8px;margin:0 .25rem;background:#fff;">
-            <button id="binderGo">Go</button>
-            <button id="binderNext">Next ▶</button>
+            <div class="nav-jump">
+              <input id="binderJump" type="number" min="1" value="1" aria-label="Jump to page">
+              <button id="binderGo">Go</button>
+            </div>
           </div>
         </div>
         <div id="binderGrid" class="binder-grid"></div>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Binder Slots">
+
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+
+  <title>Binder Slot Finder</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 1rem; }
+    .card { max-width: 560px; margin: 0 auto; padding: 1rem; border-radius: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.07); }
+    label,input,button { font-size: 1.1rem; }
+    input { width: 100%; padding: .6rem .8rem; margin:.5rem 0 1rem; border-radius: 10px; border: 1px solid #ddd; }
+    button { padding:.7rem 1rem; border:0; border-radius: 12px; cursor:pointer; }
+    .row { display:flex; gap:.75rem; }
+    .row > * { flex:1; }
+    .out { margin-top: 1rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Binder Slot Finder</h1>
+    <p>Each side = 16 slots. Enter your card number:</p>
+
+    <label for="pokeNum">Card #</label>
+    <input id="pokeNum" type="number" min="1" inputmode="numeric" placeholder="e.g. 67" />
+
+    <div class="row">
+      <button id="calc">Find Slot</button>
+      <button id="install" style="-webkit-appearance:none">Add to Home Screen</button>
+    </div>
+
+    <div class="out" id="out"></div>
+  </div>
+
+  <script>
+    const out = document.getElementById('out');
+    document.getElementById('calc').addEventListener('click', () => {
+      const n = parseInt(document.getElementById('pokeNum').value, 10);
+      if (!n || n < 1) { out.textContent = 'Enter a valid positive number.'; return; }
+
+      const page = Math.floor((n - 1) / 16) + 1;
+      const slot = ((n - 1) % 16) + 1;
+      const side = slot <= 16 ? (slot <= 16 ? (slot <= 16 ? (slot<=16) : null) : null) : null; // placeholder
+      const sideName = slot <= 16 ? ( ( ((n-1) % 32) < 16 ) ? 'Front' : 'Back' ) : 'Front'; // per 32-card sheet (optional)
+
+      out.textContent = `Page (side): ${page} • Slot: ${slot} ${sideName ? `• ${sideName}` : ''}`;
+    });
+
+    document.getElementById('install').addEventListener('click', () => {
+      alert('On iOS: tap the Share icon → “Add to Home Screen”.');
+    });
+  </script>
+</body>
+</html>

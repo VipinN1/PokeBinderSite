@@ -45,61 +45,41 @@
 
     /* On very small screens, let form rows stack to avoid horizontal overflow */
     @media (max-width: 400px) {
-      .row > * {
-        min-width: 0;
-        flex: 1 1 100%;
-      }
+      .row > * { min-width: 0; flex: 1 1 100%; }
       .wrap { padding-inline: .25rem; }
     }
 
     /* repeating small Pokéball pattern drifting */
     .bg-pokeballs{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:0;
-      opacity:.08;
+      position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.08;
       background-image:url('https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg');
-      background-repeat:repeat;
-      background-size:60px 60px;
-      background-position:0 0;
+      background-repeat:repeat; background-size:60px 60px; background-position:0 0;
       animation:pokeScroll 60s linear infinite;
     }
-    @keyframes pokeScroll{
-      0%{background-position:0 0;}
-      100%{background-position:200px 200px;}
-    }
+    @keyframes pokeScroll{ 0%{background-position:0 0;} 100%{background-position:200px 200px;} }
     @media (prefers-reduced-motion:reduce){.bg-pokeballs{animation:none;}}
 
     header{
-      position:sticky;top:0;z-index:5;
-      backdrop-filter:blur(6px);
-      background:rgba(255,255,255,.75);
-      border-bottom:1px solid var(--border);
+      position:sticky;top:0;z-index:5; backdrop-filter:blur(6px);
+      background:rgba(255,255,255,.75); border-bottom:1px solid var(--border);
     }
     .wrap{max-width:var(--wrap);margin:0 auto;padding:.5rem;}
     .tabs{display:flex;gap:.6rem;padding:.25rem;}
     .tab-btn{
-      flex:1;padding:.85rem 1rem;border:1px solid var(--border);
-      background:#fff;cursor:pointer;border-radius:12px;font-weight:700;
-      box-shadow:var(--shadow);
+      flex:1;padding:.85rem 1rem;border:1px solid var(--border); background:#fff; cursor:pointer;
+      border-radius:12px;font-weight:700; box-shadow:var(--shadow);
       transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
     }
     .tab-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.08);}
     .tab-btn.active{
-      background:linear-gradient(180deg,var(--accent),#c82300);
-      color:#fff;border-color:transparent;
+      background:linear-gradient(180deg,var(--accent),#c82300); color:#fff; border-color:transparent;
       box-shadow:0 10px 24px rgba(227,53,13,.25);
     }
 
     main{position:relative;z-index:1;}
     .card{
-      background:#fff;
-      padding:1rem;
-      border-radius:16px;
-      box-shadow:var(--shadow);
-      border:1px solid var(--border);
-      overflow:hidden; /* keeps children inside rounded corners */
+      background:#fff; padding:1rem; border-radius:16px; box-shadow:var(--shadow);
+      border:1px solid var(--border); overflow:hidden;
     }
     .hero{max-width:var(--wrap);margin:1rem auto 0;padding:clamp(.5rem,2vw,1rem);position:relative;}
     .hero::before,.hero::after{
@@ -127,25 +107,19 @@
     button.primary:hover{transform:translateY(-1px);box-shadow:0 16px 30px rgba(227,53,13,.32);}
     button{background:#fff;border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;cursor:pointer;}
     input[type="checkbox"]{accent-color:var(--accent);}
-    .out{margin-top:.75rem;font-weight:700;text-align:center;} /* centered page/slot text */
+    .out{margin-top:.75rem;font-weight:700;text-align:center;}
 
-    [data-tab]{display:none;}
-    [data-tab].active{display:block;}
+    [data-tab]{display:none;} [data-tab].active{display:block;}
 
     .toolbar{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem;}
     .toolbar .grow{flex:1;min-width:200px;}
     .pill{display:inline-block;padding:.35rem .6rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);background:#fff;}
 
-    /* spacing fix for progress pill */
+    /* Center progress + filters */
     #progress{position:relative;top:-3px;margin-right:.4rem;}
     .controls{
-  display:flex;
-  gap:.6rem;
-  align-items:center;
-  justify-content:center;  /* center inside the row */
-  margin: 0 auto;          /* center the group within the toolbar */
-  flex-wrap:wrap;
-}
+      display:flex; gap:.6rem; align-items:center; justify-content:center; margin:0 auto; flex-wrap:wrap;
+    }
 
     .list{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;}
     .row-item{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;border-bottom:1px solid var(--border);}
@@ -158,21 +132,14 @@
     .filters button{padding:.45rem .7rem;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;}
     .filters button.active{background:var(--accent);color:#fff;border-color:transparent;}
 
-    /* Responsive stats grid that wraps on mobile */
+    /* Responsive stats */
     .stats{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-      gap:.6rem;
-      margin:.6rem 0 1rem;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+      gap:.6rem; margin:.6rem 0 1rem;
     }
     .stat{
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:.6rem .8rem;
-      background:linear-gradient(180deg,#ffffff,#fff4f1);
-      text-align:center;
-      min-width:0;
-      box-shadow:var(--shadow);
+      border:1px solid var(--border); border-radius:12px; padding:.6rem .8rem;
+      background:linear-gradient(180deg,#ffffff,#fff4f1); text-align:center; min-width:0; box-shadow:var(--shadow);
     }
     .stat .v{font-weight:800;font-size:1.25rem;overflow-wrap:anywhere;}
     .stat .k{color:var(--muted);font-size:.9rem;}
@@ -180,28 +147,21 @@
 
     /* --- SPRITES --- */
     .sprite-box{
-      border:1px solid var(--border);
-      border-radius:14px;
-      width:180px;height:180px;           /* bigger */
-      background:#fff;
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:var(--shadow);
-      margin:.25rem auto 0;                /* centered */
+      border:1px solid var(--border); border-radius:14px; width:180px; height:180px;
+      background:#fff; display:flex; align-items:center; justify-content:center;
+      box-shadow:var(--shadow); margin:.25rem auto 0;
     }
     .sprite-box img{max-width:92%;max-height:92%;object-fit:contain;display:block;}
     .icon-sprite{
       width:44px;height:44px;object-fit:contain;display:block;
-      background:#fff;border-radius:8px;box-shadow:var(--shadow);
-      flex-shrink:0;
+      background:#fff;border-radius:8px;box-shadow:var(--shadow); flex-shrink:0;
     }
 
     /* --- Finder actions centered --- */
-    .finder-actions{
-      display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-top:.25rem;
-    }
+    .finder-actions{ display:flex; justify-content:center; gap:.75rem; flex-wrap:wrap; margin-top:.25rem; }
     .collected-pill{
-      display:flex;align-items:center;gap:.5rem;
-      padding:.5rem .8rem;border:1px solid var(--border);border-radius:12px;background:#fff;
+      display:flex; align-items:center; gap:.5rem;
+      padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; background:#fff;
     }
 
     /* --- BINDER VIEW (4x4) --- */
@@ -214,11 +174,9 @@
     .nav-jump input{
       width:4.2rem;padding:.4rem .5rem;border:1px solid var(--border);border-radius:8px;background:#fff;
     }
+
     .binder-grid{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr)); /* prevents horizontal overflow */
-      gap:.5rem;
-      width:100%;
+      display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:.5rem; width:100%;
     }
     .binder-cell{
       border:1px solid var(--border); border-radius:12px; background:#fff; padding:.45rem; text-align:center;
@@ -227,35 +185,25 @@
     .binder-cell .slot{ color:var(--muted); font-size:.8rem; margin-top:.25rem; }
     .binder-cell img{ width:64px; height:64px; object-fit:contain; }
 
-    /* Binder cell text sizing + truncation */
+    /* Binder cell title: single-line auto-shrink */
     .binder-cell .title{
-  font-weight:700;
-  margin-top:.25rem;
-  font-size:.95rem;
-  line-height:1.1;
-  max-width:100%;
-  text-align:center;
-  white-space:normal;      /* allow wrapping */
-  overflow:visible;        /* no clipping */
-  word-break:break-word;   /* break long names if needed */
-}
-@media (max-width: 420px){
-  .binder-cell .title{ font-size:.85rem; line-height:1.15; }
-}
+      font-weight:700; margin-top:.25rem; font-size:1rem; line-height:1.1;
+      max-width:100%; text-align:center; white-space:nowrap; overflow:hidden;
+      display:inline-block; transform-origin:center; transition:transform .1s ease;
+    }
+    .binder-cell .title[data-fit]{ transform:scale(var(--fit-scale,1)); }
 
     @media (max-width: 420px){
       .binder-grid{ gap:.4rem; }
       .binder-cell{ min-height:96px; padding:.4rem; }
       .binder-cell img{ width:56px; height:56px; }
-      .binder-cell .title{ font-size:.8rem; }
+      .binder-cell .title{ font-size:.9rem; }
       .binder-cell .slot{ font-size:.75rem; }
     }
 
     /* Highlight collected Pokémon in Binder View */
     .binder-cell.checked{
-      background:#e9f8ec;               /* soft green */
-      border-color:#b8e4c4;
-      box-shadow:inset 0 0 0 2px #b8e4c4;
+      background:#e9f8ec; border-color:#b8e4c4; box-shadow:inset 0 0 0 2px #b8e4c4;
     }
   </style>
 </head>
@@ -501,7 +449,7 @@
         let maxId=0;
         text.split(/\r?\n/).forEach(raw=>{
           const line=raw.trim();
-          if(!line||/^number\s*,\s*name/i.test(line)) return;      // skip header/blank
+          if(!line||/^number\s*,\s*name/i.test(line)) return;
           const [numRaw,nameRaw]=line.split(',');
           if(!numRaw||!nameRaw) return;
           const num=numRaw.trim(), name=nameRaw.trim();
@@ -513,7 +461,7 @@
         populateDatalist();
         renderList();
         updateProgress();
-        setBinderPage(1); // initial render
+        setBinderPage(1);
         const n=parseInt(numInput.value,10);
         if(n>0) syncFinderUI(padNum(n));
       })
@@ -558,7 +506,6 @@
 
     function renderBinderGrid(){
       binderGrid.innerHTML='';
-      // 16 slots per page, 4x4; global index is 1-based
       for(let i=0;i<16;i++){
         const globalIndex=(binderPage-1)*16 + (i+1);
         const num=padNum(globalIndex);
@@ -570,14 +517,27 @@
 
         const slotNote=document.createElement('div');
         slotNote.className='slot';
-        slotNote.textContent = `Slot ${((globalIndex-1)%16)+1} • #${num}`;  // number moved down here
+        slotNote.textContent = `Slot ${((globalIndex-1)%16)+1} • #${num}`;
 
         const name=dexMap.get(num);
         if(name){
           const img=makeSpriteImg(num, name);
           const label=document.createElement('div');
           label.className='title';
-          label.textContent = name;               // name only in the box
+          label.textContent = name;
+
+          // --- Auto-fit text so it stays on one line ---
+          requestAnimationFrame(() => {
+            const maxWidth = cell.clientWidth * 0.9; // little padding
+            if (label.scrollWidth > maxWidth) {
+              const scale = Math.max(0.75, maxWidth / label.scrollWidth);
+              label.style.setProperty('--fit-scale', scale);
+              label.setAttribute('data-fit','');
+            } else {
+              label.style.removeProperty('--fit-scale');
+              label.removeAttribute('data-fit');
+            }
+          });
 
           cell.append(img, label, slotNote);
         }else{
@@ -630,7 +590,7 @@
       const isChecked=!!checkedState[num];
       if(currentFilter==='checked') return isChecked;
       if(currentFilter==='unchecked') return !isChecked;
-      return true; // all
+      return true;
     }
 
     function renderList(){

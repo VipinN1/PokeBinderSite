@@ -3,113 +3,399 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Binder Slots">
-
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-
   <title>Binder Slot Finder</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 1rem; }
-    .card { max-width: 560px; margin: 0 auto; padding: 1rem; border-radius: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.07); }
-    label,input,button { font-size: 1.1rem; }
-    input { width: 100%; padding: .6rem .8rem; margin:.5rem 0 1rem; border-radius: 10px; border: 1px solid #ddd; }
-    button { padding:.7rem 1rem; border:0; border-radius: 12px; cursor:pointer; }
-    .row { display:flex; gap:.75rem; }
-    .row > * { flex:1; }
+    :root { --bg:#fff; --fg:#111; --muted:#666; --border:#e7e7e7; --accent:#4f7cff; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: var(--bg); color: var(--fg); }
+    header { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 10; }
+    .tabs { max-width: 900px; margin: 0 auto; display: flex; gap: .5rem; padding: .5rem; }
+    .tab-btn { flex: 1; padding: .8rem 1rem; border: 1px solid var(--border); background: #fafafa; cursor: pointer; border-radius: 10px; font-weight: 600; }
+    .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    main { max-width: 900px; margin: 0 auto; padding: 1rem; }
+    .card { background: #fff; padding: 1rem; border-radius: 14px; box-shadow: 0 6px 18px rgba(0,0,0,.06); border: 1px solid var(--border); }
+    label,input,button,select { font-size: 1.05rem; }
+    input[type="number"], input[type="text"], select { width: 100%; padding: .6rem .8rem; margin:.5rem 0 1rem; border-radius: 10px; border: 1px solid var(--border); }
+    button.primary { padding:.7rem 1rem; border:0; border-radius: 12px; cursor:pointer; background: var(--accent); color:#fff; font-weight: 700; }
+    .row { display:flex; gap:.75rem; flex-wrap: wrap; }
+    .row > * { flex:1; min-width: 200px; }
     .out { margin-top: 1rem; font-weight: 600; }
-    small.muted { color:#666 }
+    small.muted { color: var(--muted); }
+
+    /* Checklist */
+    .toolbar { display:flex; gap:.75rem; flex-wrap: wrap; align-items: center; margin-bottom: .5rem; }
+    .toolbar .grow { flex: 1; min-width: 200px; }
+    .pill { display:inline-block; padding:.35rem .6rem; border:1px solid var(--border); border-radius: 999px; color: var(--muted); }
+    .list { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .row-item { display:flex; align-items:center; gap:.75rem; padding:.6rem .8rem; border-bottom:1px solid var(--border); }
+    .row-item:last-child { border-bottom: 0; }
+    .row-item input[type="checkbox"] { transform: scale(1.2); }
+    .num { font-variant-numeric: tabular-nums; font-weight: 700; width: 3.5rem; }
+    .name { flex: 1; }
+    .strike { text-decoration: line-through; color: var(--muted); }
+    .controls { display:flex; gap:.5rem; align-items:center; }
+    .filters { display:flex; gap:.4rem; }
+    .filters button { padding:.45rem .7rem; border:1px solid var(--border); border-radius: 999px; background:#fafafa; cursor:pointer; }
+    .filters button.active { background: var(--accent); color:#fff; border-color: var(--accent); }
+
+    /* Hide/show tabs */
+    [data-tab] { display: none; }
+    [data-tab].active { display: block; }
+
+    /* Stats grid */
+    .stats { display:grid; grid-template-columns: repeat(4,1fr); gap:.6rem; margin:.6rem 0 1rem; }
+    .stat { border:1px solid var(--border); border-radius: 12px; padding:.6rem .8rem; background:#fafafa; text-align:center; }
+    .stat .v { font-weight:800; font-size:1.2rem; }
+    .stat .k { color:var(--muted); font-size:.9rem; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Binder Slot Finder</h1>
-    <p>Each side has 16 slots. Enter a number or pick a Pokémon:</p>
+  <header>
+    <nav class="tabs">
+      <button class="tab-btn active" data-open="#finder">Finder</button>
+      <button class="tab-btn" data-open="#checklist">Checklist</button>
+    </nav>
+  </header>
 
-    <label for="pokePicker">Search Pokémon</label>
-    <input id="pokePicker" list="pokeList" placeholder="e.g. 001 — Bulbasaur" autocomplete="off" />
-    <datalist id="pokeList"></datalist>
-    <small class="muted">Format in <code>pokemon.txt</code>: <code>Number,Name</code> (e.g., <code>001,Bulbasaur</code>)</small>
+  <main>
+    <!-- Finder Tab -->
+    <section id="finder" class="card active" data-tab>
+      <h1>Binder Slot Finder</h1>
+      <p>Each side has 16 slots. Enter a number or pick a Pokémon:</p>
 
-    <label for="pokeNum">Card #</label>
-    <input id="pokeNum" type="number" min="1" inputmode="numeric" placeholder="e.g. 67" />
+      <label for="pokePicker">Search Pokémon</label>
+      <input id="pokePicker" list="pokeList" placeholder="e.g. 001 — Bulbasaur" autocomplete="off" />
+      <datalist id="pokeList"></datalist>
+      <small class="muted">Format in <code>pokemon.txt</code>: <code>Number,Name</code></small>
 
-    <div class="row">
-      <button id="calc">Find Slot</button>
-      <button id="install" style="-webkit-appearance:none">Add to Home Screen</button>
-    </div>
+      <div class="row">
+        <div>
+          <label for="pokeNum">Card #</label>
+          <input id="pokeNum" type="number" min="1" inputmode="numeric" placeholder="e.g. 67" />
+        </div>
+        <div style="align-self:flex-end">
+          <button id="calc" class="primary">Find Slot</button>
+        </div>
+      </div>
 
-    <div class="out" id="out"></div>
-  </div>
+      <div id="finderMeta" class="row" style="align-items:center; margin-top:.25rem;">
+        <div id="selectedName" class="muted" style="flex:1;"></div>
+        <label style="display:flex;align-items:center;gap:.5rem;min-width:160px;justify-content:flex-end;">
+          <input type="checkbox" id="collectedToggle" disabled />
+          Collected
+        </label>
+      </div>
+
+      <div class="out" id="out"></div>
+      <div class="out" id="finderHint" style="display:none;color:#b00"></div>
+
+      <div class="row" style="margin-top:1rem">
+        <button id="install">Add to Home Screen</button>
+      </div>
+    </section>
+
+    <!-- Checklist Tab -->
+    <section id="checklist" class="card" data-tab>
+      <h1>Checklist</h1>
+
+      <!-- Stats -->
+      <div class="stats" id="stats">
+        <div class="stat"><div class="v" id="statCollected">0</div><div class="k">Collected</div></div>
+        <div class="stat"><div class="v" id="statTotal">0</div><div class="k">Total</div></div>
+        <div class="stat"><div class="v" id="statPercent">0%</div><div class="k">Complete</div></div>
+        <div class="stat"><div class="v" id="statRemaining">0</div><div class="k">Remaining</div></div>
+      </div>
+
+      <div class="toolbar">
+        <input id="searchList" class="grow" type="text" placeholder="Search name or number..." />
+        <div class="controls">
+          <span id="progress" class="pill">0 / 0</span>
+          <div class="filters">
+            <button data-filter="all" class="active">All</button>
+            <button data-filter="unchecked">Unchecked</button>
+            <button data-filter="checked">Checked</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="list" class="list" aria-live="polite"></div>
+
+      <div class="row" style="margin-top: .75rem;">
+        <button id="markAll">Mark All</button>
+        <button id="clearAll">Clear All</button>
+        <button id="exportBtn">Export</button>
+        <input id="importFile" type="file" accept="application/json" style="display:none" />
+        <button id="importBtn">Import</button>
+      </div>
+      <small class="muted">Progress and checks are saved automatically to your device (localStorage).</small>
+    </section>
+  </main>
 
   <script>
+    // ---------- Tab switching ----------
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabs = document.querySelectorAll('[data-tab]');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabs.forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelector(btn.dataset.open).classList.add('active');
+      });
+    });
+
+    // ---------- Finder elements ----------
     const out = document.getElementById('out');
     const numInput = document.getElementById('pokeNum');
     const picker = document.getElementById('pokePicker');
-    const list = document.getElementById('pokeList');
+    const dataList = document.getElementById('pokeList');
+    const finderHint = document.getElementById('finderHint');
+    const selectedNameEl = document.getElementById('selectedName');
+    const collectedToggle = document.getElementById('collectedToggle');
 
-    // Map like: { "001": "Bulbasaur", ... }
+    // ---------- Checklist elements ----------
+    const listEl = document.getElementById('list');
+    const searchList = document.getElementById('searchList');
+    const progressEl = document.getElementById('progress');
+    const filterButtons = document.querySelectorAll('.filters button');
+    const statCollected = document.getElementById('statCollected');
+    const statTotal = document.getElementById('statTotal');
+    const statPercent = document.getElementById('statPercent');
+    const statRemaining = document.getElementById('statRemaining');
+
+    // ---------- Data / State ----------
+    const STORAGE_KEY = 'binderChecked_v1';
+    /** number (3+ digits string) -> name */
     const dexMap = new Map();
+    /** { "001": true/false } */
+    let checkedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 
-    // Load pokemon.txt (must be in same directory or adjust path)
+    function padNum(n) { return String(n).padStart(3,'0'); }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(checkedState));
+      updateProgress();
+    }
+
+    // ---------- Finder logic ----------
+    function compute() {
+      const n = parseInt(numInput.value, 10);
+      if (!n || n < 1) { out.textContent = 'Enter a valid positive number.'; syncFinderCollected(null); return; }
+      const page = Math.floor((n - 1) / 16) + 1;
+      const slot = ((n - 1) % 16) + 1;
+      out.textContent = `Page: ${page} • Slot: ${slot}`;
+
+      const id = padNum(n);
+      syncFinderCollected(id);
+    }
+
+    function syncFinderCollected(id) {
+      if (!id || !dexMap.has(id)) {
+        selectedNameEl.textContent = '';
+        collectedToggle.disabled = true;
+        collectedToggle.checked = false;
+        return;
+      }
+      const name = dexMap.get(id);
+      selectedNameEl.textContent = `${id} — ${name}`;
+      collectedToggle.disabled = false;
+      collectedToggle.checked = !!checkedState[id];
+    }
+
+    document.getElementById('calc').addEventListener('click', compute);
+
+    picker.addEventListener('change', () => {
+      const m = picker.value.match(/^\s*(\d{1,4})/);
+      if (m) {
+        const n = parseInt(m[1], 10);
+        if (Number.isFinite(n) && n > 0) { numInput.value = String(n); compute(); }
+      }
+    });
+
+    collectedToggle.addEventListener('change', () => {
+      const n = parseInt(numInput.value, 10);
+      if (!n || n < 1) return;
+      const id = padNum(n);
+      if (!dexMap.has(id)) return; // only allow valid entries
+      checkedState[id] = collectedToggle.checked;
+      saveState();
+      renderList(); // reflect change on checklist immediately
+    });
+
+    // ---------- Load pokemon.txt ----------
     fetch('pokemon.txt')
       .then(r => {
         if (!r.ok) throw new Error('pokemon.txt not found');
         return r.text();
       })
       .then(text => {
-        text.split(/\r?\n/).forEach(line => {
-          line = line.trim();
-          if (!line || /^number\s*,\s*name/i.test(line)) return; // skip header/blank
+        const lines = text.split(/\r?\n/);
+        for (const raw of lines) {
+          const line = raw.trim();
+          if (!line || /^number\s*,\s*name/i.test(line)) continue;
           const [numRaw, nameRaw] = line.split(',');
-          if (!numRaw || !nameRaw) return;
+          if (!numRaw || !nameRaw) continue;
           const num = numRaw.trim();
           const name = nameRaw.trim();
+          if (!/^\d+$/.test(num)) continue;
           dexMap.set(num, name);
-
-          // For datalist, show "001 — Bulbasaur" but value must be searchable
-          const opt = document.createElement('option');
-          opt.value = `${num} — ${name}`;
-          list.appendChild(opt);
-        });
+        }
+        populateDatalist();
+        renderList();
+        updateProgress();
+        // If user already typed a number before load, sync the collected UI
+        const n = parseInt(numInput.value, 10);
+        if (n > 0) syncFinderCollected(padNum(n));
       })
       .catch(err => {
         console.warn(err);
-        // Soft hint for local-file viewing; will work on GitHub Pages
-        const warn = document.createElement('div');
-        warn.className = 'out';
-        warn.textContent = 'Tip: pokemon.txt could not be loaded here. It will load when hosted (e.g., GitHub Pages).';
-        document.querySelector('.card').appendChild(warn);
+        finderHint.style.display = 'block';
+        finderHint.textContent = 'pokemon.txt could not be loaded. On GitHub Pages it will load if placed next to index.html.';
       });
 
-    // When user chooses from the datalist, extract the leading number
-    picker.addEventListener('change', () => {
-      const m = picker.value.match(/^\s*(\d{1,4})/); // allow up to 4 digits for later gens
-      if (m) {
-        const n = parseInt(m[1], 10);
-        if (Number.isFinite(n) && n > 0) {
-          numInput.value = String(n);
-          compute();
-        }
+    function populateDatalist() {
+      dataList.innerHTML = '';
+      for (const [num, name] of dexMap) {
+        const opt = document.createElement('option');
+        opt.value = `${num} — ${name}`;
+        dataList.appendChild(opt);
       }
-    });
-
-    // Core math: each side has 16 slots; pages are 1-based
-    function compute() {
-      const n = parseInt(numInput.value, 10);
-      if (!n || n < 1) { out.textContent = 'Enter a valid positive number.'; return; }
-
-      const page = Math.floor((n - 1) / 16) + 1;
-      const slot = ((n - 1) % 16) + 1;
-
-      out.textContent = `Page: ${page} • Slot: ${slot}`;
     }
 
-    document.getElementById('calc').addEventListener('click', compute);
+    // ---------- Checklist rendering & interactions ----------
+    let currentFilter = 'all';
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderList();
+      });
+    });
 
-    // iOS Add to Home Screen hint (manual; iOS requires user action)
+    searchList.addEventListener('input', () => renderList());
+
+    function updateProgress() {
+      const total = dexMap.size;
+      let checked = 0;
+      for (const num of dexMap.keys()) if (checkedState[num]) checked++;
+      const remaining = total - checked;
+      const pct = total ? Math.round((checked / total) * 100) : 0;
+
+      progressEl.textContent = `${checked} / ${total}`;
+      statCollected.textContent = checked;
+      statTotal.textContent = total;
+      statPercent.textContent = `${pct}%`;
+      statRemaining.textContent = remaining;
+    }
+
+    function passesFilter(num) {
+      const isChecked = !!checkedState[num];
+      if (currentFilter === 'checked') return isChecked;
+      if (currentFilter === 'unchecked') return !isChecked;
+      return true; // all
+    }
+
+    function renderList() {
+      const q = searchList.value.trim().toLowerCase();
+      const frag = document.createDocumentFragment();
+      listEl.innerHTML = '';
+
+      for (const [num, name] of dexMap) {
+        const hay = (num + ' ' + name).toLowerCase();
+        if (q && !hay.includes(q)) continue;
+        if (!passesFilter(num)) continue;
+
+        const row = document.createElement('div');
+        row.className = 'row-item';
+        row.dataset.num = num;
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !!checkedState[num];
+        cb.addEventListener('change', () => {
+          checkedState[num] = cb.checked;
+          saveState();
+          nameEl.classList.toggle('strike', cb.checked);
+          // If this is the currently selected one in Finder, sync the toggle
+          const cur = parseInt(numInput.value, 10);
+          if (cur > 0 && padNum(cur) === num) collectedToggle.checked = cb.checked;
+        });
+
+        const numEl = document.createElement('div');
+        numEl.className = 'num';
+        numEl.textContent = num;
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'name';
+        nameEl.textContent = name;
+        nameEl.classList.toggle('strike', cb.checked);
+
+        // Tap anywhere on row to toggle
+        row.addEventListener('click', (e) => {
+          if (e.target.tagName.toLowerCase() === 'input') return;
+          cb.checked = !cb.checked;
+          checkedState[num] = cb.checked;
+          nameEl.classList.toggle('strike', cb.checked);
+          saveState();
+          // Sync Finder toggle if same Pokémon
+          const cur = parseInt(numInput.value, 10);
+          if (cur > 0 && padNum(cur) === num) collectedToggle.checked = cb.checked;
+        });
+
+        row.append(cb, numEl, nameEl);
+        frag.appendChild(row);
+      }
+
+      listEl.appendChild(frag);
+      updateProgress();
+    }
+
+    // Mark/Clear/Export/Import
+    document.getElementById('markAll').addEventListener('click', () => {
+      for (const num of dexMap.keys()) checkedState[num] = true;
+      saveState(); renderList();
+    });
+    document.getElementById('clearAll').addEventListener('click', () => {
+      checkedState = {};
+      saveState(); renderList();
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(checkedState, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'binder-progress.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    const importFile = document.getElementById('importFile');
+    document.getElementById('importBtn').addEventListener('click', () => importFile.click());
+    importFile.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const obj = JSON.parse(String(reader.result));
+          if (obj && typeof obj === 'object') {
+            checkedState = obj;
+            saveState(); renderList();
+            // Also sync finder if a Pokémon is selected
+            const n = parseInt(numInput.value, 10);
+            if (n > 0) syncFinderCollected(padNum(n));
+          }
+        } catch { alert('Invalid JSON'); }
+      };
+      reader.readAsText(file);
+      importFile.value = '';
+    });
+
+    // iOS Add to Home Screen reminder
     document.getElementById('install').addEventListener('click', () => {
       alert('On iOS: tap the Share icon → “Add to Home Screen”.');
     });

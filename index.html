@@ -39,22 +39,31 @@
     }
 
     /* Floating Pokéball(s) behind everything */
-    .bg-pokeballs{
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .pokeball{
-      position: absolute;
-      width: 160px; height: 160px;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/1024px-Pok%C3%A9_Ball_icon.svg.png?20161023215848') center/contain no-repeat;
-      opacity: .08;                /* subtle */
-      filter: saturate(110%);
-      animation: floatY 24s linear infinite, floatX 36s ease-in-out infinite;
-      will-change: transform;
-    }
+    /* Small repeating Pokéball pattern that slowly drifts diagonally */
+.bg-pokeballs{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .08; /* overall subtlety */
+  background-image: url('YOUR-POKEBALL-LINK.svg'); /* <= paste your SVG/PNG URL here */
+  background-repeat: repeat;
+  background-size: 48px 48px;   /* smaller icons; try 40–56px */
+  background-position: 0 0;
+  animation: pokeScroll 60s linear infinite;
+}
+
+/* gentle diagonal drift of the tiled background */
+@keyframes pokeScroll{
+  0%   { background-position:   0px   0px; }
+  100% { background-position: 200px 200px; }
+}
+
+/* If users prefer reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .bg-pokeballs{ animation: none; }
+}
+
     .pokeball.pb2{ width: 220px; height: 220px; opacity: .06; animation-duration: 28s, 42s; }
     .pokeball.pb3{ width: 120px; height: 120px; opacity: .1;  animation-duration: 20s, 30s; }
 
@@ -188,6 +197,18 @@
     .filters{ display:flex; gap:.4rem; }
     .filters button{ padding:.45rem .7rem; border:1px solid var(--border); border-radius:999px; background:#fff; cursor:pointer; }
     .filters button.active{ background: var(--accent); color:#fff; border-color: transparent; }
+/* --- progress pill spacing fix --- */
+#progress {
+  position: relative;
+  top: -3px;           /* lifts it slightly away from buttons */
+  margin-right: .4rem; /* gives horizontal breathing room */
+}
+
+.controls {
+  gap: .6rem;          /* ensures consistent space between elements */
+  align-items: center;
+}
+/* --- end spacing fix --- */
 
     /* Responsive stats grid — fixes mobile overflow */
     .stats{
@@ -215,11 +236,9 @@
 </head>
 <body>
   <!-- floating pokéballs -->
-  <div class="bg-pokeballs" aria-hidden="true">
-    <div class="pokeball pb1"></div>
-    <div class="pokeball pb2"></div>
-    <div class="pokeball pb3"></div>
-  </div>
+  <!-- replace the old 3 .pokeball divs with this single div -->
+<div class="bg-pokeballs" aria-hidden="true"></div>
+
 
   <header>
     <div class="wrap">

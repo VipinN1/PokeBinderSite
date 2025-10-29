@@ -34,6 +34,23 @@
       overflow-x:hidden;
     }
 
+    /* Lock horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;        /* hide any accidental horizontal overflow */
+  overscroll-behavior-x: none; /* prevent sideways rubber-band */
+  touch-action: pan-y;       /* only allow vertical panning */
+}
+/* On very small screens, let form rows stack to avoid horizontal overflow */
+@media (max-width: 400px) {
+  .row > * {
+    min-width: 0;          /* allow shrinking */
+    flex: 1 1 100%;        /* stack each control on its own line */
+  }
+  .wrap {
+    padding-inline: .25rem; /* slightly tighter header padding */
+  }
+}
+
     /* repeating small Pokéball pattern drifting */
     .bg-pokeballs{
       position:fixed;
@@ -43,7 +60,7 @@
       opacity:.08;
       background-image:url('https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg'); /* replace with your PNG/SVG if you like */
       background-repeat:repeat;
-      background-size:48px 48px;      /* adjust smaller/larger */
+      background-size:60px 60px;      /* adjust smaller/larger */
       background-position:0 0;
       animation:pokeScroll 60s linear infinite;
     }
